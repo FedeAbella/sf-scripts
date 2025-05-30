@@ -40,15 +40,16 @@ for id in "${ids[@]}"; do
 done
 
 if [[ -f all_failed.csv ]]; then
-    env printf "\n\e[1;34m-----\n\u279C Extracting all errors into all_errors and unique_errors ...\n-----\e[0m\n"
+    env printf "\n\e[1;34m-----\n\u279C Extracting all errors into all_errors and unique_errors.csv...\n-----\e[0m\n"
     if [[ -f all_errors ]]; then
         rm -f all_errors
     fi
-    if [[ -f unique_errors ]]; then
-        rm -f unique_errors
+    if [[ -f unique_errors.csv ]]; then
+        rm -f unique_errors.csv
     fi
     tail -n +2 all_failed.csv | sed 's|[^,]*,||' | sed 's|,.*||' >all_errors
-    sort all_errors | uniq -c | sort -n -r >unique_errors
+    echo "count,error" >unique_errors.csv
+    sort all_errors | uniq -c | sort -n -r | sed 's| *||' | sed 's| |,|' >>unique_errors.csv
 fi
 
 env printf "\n\e[1;34m-----\n\u279C Results summary:\n-----\e[0m\n"
@@ -60,7 +61,7 @@ fi
 
 if [[ -f all_failed.csv ]]; then
     echo "Total failed records across all batches: $(tail -n +2 all_failed.csv | wc -l)"
-    echo "Total unique errors across all batches: $(wc -l <unique_errors)"
+    echo "Total unique errors across all batches: $(tail -n +2 unique_errors.csv | wc -l)"
 else
     echo "No failed records across all batches"
 fi
