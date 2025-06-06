@@ -15,6 +15,9 @@ fi
 if [[ -f all_failed.csv ]]; then
     rm -f all_failed.csv
 fi
+if [[ ! -d src/ ]]; then
+    mkdir src/
+fi
 
 first_success=true
 first_failed=true
@@ -28,6 +31,7 @@ for id in "${ids[@]}"; do
             first_success=false
         fi
         tail -n +2 "${filename_success}" >>all_success.csv
+        mv "${filename_success}" src/"${filename_success}"
     fi
 
     if [[ -f "${filename_failed}" ]]; then
@@ -36,6 +40,7 @@ for id in "${ids[@]}"; do
             first_failed=false
         fi
         tail -n +2 "$filename_failed" >>all_failed.csv
+        mv "${filename_failed}" src/"${filename_failed}"
     fi
 done
 
